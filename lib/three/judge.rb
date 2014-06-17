@@ -56,17 +56,15 @@ module Three
 
     def execute_rule rule, method, subject, target
       begin
-        begin
-          # try sending a target first
-          rule.send(method, subject, target)
-        rescue
-          # if that fails, try sending just the subject
-          rule.send(method, subject)
-        end
+        # try sending a target first
+        rule.send(method, subject, target)
       rescue
-        # if everything fails, just return nothing
-        []
+        # if that fails, try sending just the subject
+        rule.send(method, subject)
       end
+    rescue
+      # if everything fails, just return nothing
+      []
     end
 
     def flatten_permissions permissions
