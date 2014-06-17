@@ -33,7 +33,7 @@ module Three
       all_permissions       = all_permissions_for subject, target
       permissions_to_reject = permissions_to_reject_for subject, target
 
-      all_permissions.reject { |x| permissions_to_reject.include? x.to_s }
+      all_permissions - permissions_to_reject
     end
 
     def all_permissions_for subject, target
