@@ -38,16 +38,12 @@ module Three
     end
 
     def all_permissions_for subject, target
-      permissions = rules.map do |rule| 
-                                execute_rule rule, :allowed, subject, target
-                              end
+      permissions = rules.map { |r| execute_rule r, :allowed, subject, target }
       flatten_permissions(permissions)
     end
 
     def permissions_to_reject_for subject, target
-      permissions = rules.map do |rule| 
-                                execute_rule rule, :prevented, subject, target
-                              end
+      permissions = rules.map { |r| execute_rule r, :prevented, subject, target }
       flatten_permissions permissions
     end
 
