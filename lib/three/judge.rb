@@ -8,7 +8,7 @@ module Three
 
     def allowed? subject, permissions_to_check, target = nil
       permissions_to_check = [permissions_to_check] unless this_is_an_array? permissions_to_check
-      permissions_to_check.all? { |a| action_included? subject, a, target }
+      permissions_to_check.all? { |p| permission_included? subject, p, target }
     end
 
     private
@@ -25,7 +25,7 @@ module Three
       thing.respond_to? :each
     end
 
-    def action_included? subject, permission_to_check, target
+    def permission_included? subject, permission_to_check, target
       allowed_permissions_for(subject, target).include? permission_to_check.to_s
     end
 
