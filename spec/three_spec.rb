@@ -173,6 +173,29 @@ describe Three do
         abilities.allowed?(subject, :orange).must_equal true
       end
 
+      describe "with a target" do
+
+        let(:target) { Object.new }
+
+        before do
+          rule1.stubs(:allowed).with(subject, target).returns [:orange, :banana]
+          rule1.stubs(:prevented).with(subject, target).returns [:apple]
+
+          rule2.stubs(:allowed).with(subject, target).returns [:apple, :pear]
+          rule2.stubs(:prevented).with(subject, target).returns [:banana]
+        end
+
+        it "should return false for the permissions that are prevented" do
+          abilities.allowed?(subject, :banana, target).must_equal false
+          abilities.allowed?(subject, :apple, target).must_equal false
+        end
+
+        it "should return true for the permissions that are not prevented" do
+          abilities.allowed?(subject, :pear, target).must_equal true
+          abilities.allowed?(subject, :orange, target).must_equal true
+        end
+      end
+
     end
 
     describe "alternate constructor" do
