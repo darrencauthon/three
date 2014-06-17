@@ -38,33 +38,32 @@ module Three
     end
 
     def all_permissions_for subject, target
-      permissions = rules.map do |rp| 
-                                begin
-                                  begin
-                                    rp.allowed subject, target
-                                  rescue
-                                    rp.allowed subject
-                                  end
-                                rescue
-                                  []
-                                end
+      permissions = rules.map do |rule| 
+                                execute_rule rule, :allowed, subject, target
                               end
       flatten_permissions(permissions)
     end
 
     def permissions_to_reject_for subject, target
-      permissions = rules.map do |r| 
-                                begin
-                                  begin
-                                    r.prevented(subject, target)
-                                  rescue
-                                    r.prevented(subject)
-                                  end
-                                rescue
-                                  []
-                                end
+      permissions = rules.map do |rule| 
+                                execute_rule rule, :prevented, subject, target
                               end
       flatten_permissions permissions
+    end
+
+    def execute_rule rule, method, subject, target
+      begin
+        begin
+          # try sending a target first
+          rule.send(method, subject, target)
+        rescue
+          # if that fails, try sending just the subject
+          rule.send(method, subject)
+        end
+      rescue
+        # if everything fails, just return nothing
+        []
+      end
     end
 
     def flatten_permissions permissions
