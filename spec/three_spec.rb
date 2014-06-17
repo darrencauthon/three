@@ -1,6 +1,6 @@
 require_relative 'spec_helper'
 
-describe Six do
+describe Three do
   it "should exist" do
     true.must_equal true
   end
@@ -9,7 +9,7 @@ describe Six do
 
     describe "there are no rules" do
 
-      let(:abilities) { Six::Judge.new([]) }
+      let(:abilities) { Three::Judge.new([]) }
 
       it "should return false" do
         abilities.allowed?(nil, :does_not_matter).must_equal false
@@ -22,7 +22,7 @@ describe Six do
 
       describe "one rule that returns one permission" do
 
-        let(:abilities) { Six.judge_enforcing([rule]) }
+        let(:abilities) { Three.judge_enforcing([rule]) }
 
         let(:subject) { Object.new }
 
@@ -70,7 +70,7 @@ describe Six do
 
     describe "one rule that returns two permissions" do
 
-      let(:abilities) { Six.judge_enforcing([rule]) }
+      let(:abilities) { Three.judge_enforcing([rule]) }
 
       let(:subject) { Object.new }
 
@@ -103,7 +103,7 @@ describe Six do
 
     describe "two rules that return one permission each" do
 
-      let(:abilities) { Six.judge_enforcing([rule1, rule2]) }
+      let(:abilities) { Three.judge_enforcing([rule1, rule2]) }
 
       let(:subject) { Object.new }
 
@@ -142,7 +142,7 @@ describe Six do
 
     describe "rejecting permissions" do
 
-      let(:abilities) { Six.judge_enforcing([rule1, rule2]) }
+      let(:abilities) { Three.judge_enforcing([rule1, rule2]) }
 
       let(:subject) { Object.new }
 
@@ -174,7 +174,7 @@ describe Six do
 
     describe "alternate constructor" do
 
-      let(:abilities) { Six.judge_enforcing(rule1, rule2) }
+      let(:abilities) { Three.judge_enforcing(rule1, rule2) }
 
       let(:subject) { Object.new }
 
@@ -206,7 +206,7 @@ describe Six do
 
     describe "no rules provided" do
       it "should return false for everything" do
-        abilities = Six::Judge.new([])
+        abilities = Three::Judge.new([])
         abilities.allowed?(Object.new, :anything).must_equal false
         abilities.allowed?(Object.new, :anything, Object.new).must_equal false
       end

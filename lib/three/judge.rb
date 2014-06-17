@@ -1,4 +1,4 @@
-module Six
+module Three
 
   class Judge
 

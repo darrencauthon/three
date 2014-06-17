@@ -1,15 +1,15 @@
-## Six - is a ultra simple authorization gem for ruby! 
+## Three - is a super-ultra simple authorization gem for ruby! 
 
-[![Build Status](https://travis-ci.org/randx/six.png?branch=master)](https://travis-ci.org/randx/six)
-[![Code Climate](https://codeclimate.com/github/randx/six.png)](https://codeclimate.com/github/randx/six)
-[![Coverage Status](https://coveralls.io/repos/randx/six/badge.png)](https://coveralls.io/r/randx/six)
+[![Build Status](https://travis-ci.org/darrencauthon/three.png?branch=master)](https://travis-ci.org/darrencauthon/three)
+[![Code Climate](https://codeclimate.com/github/darrencauthon/three.png)](https://codeclimate.com/github/darrencauthon/three)
+[![Coverage Status](https://coveralls.io/repos/darrencauthon/three/badge.png)](https://coveralls.io/r/darrencauthon/three)
 
 _based on clear ruby it can be used for rails 2 & 3 or any other framework_
 
 ### Installation
 
 ```ruby
-  gem install six
+  gem install three
 ```
 
 
@@ -17,258 +17,77 @@ _based on clear ruby it can be used for rails 2 & 3 or any other framework_
 
 4 steps:
 
-1. create abilities object
+
+1. Create an object with an "allowed" method. 
+
+This method will receive two arguments, the subject (the object we are checking the rules for) and a target (optionally passed as nil, 
 
     ```ruby
-      abilites = Six.new
-    ```
-
-2. create object/class with allowed method - here you'll put conditions to define abilities
-
-    ```ruby
-    class BookRules
-      def self.allowed(author, book)
-        [:read_book, :edit_book]
+    class CarDrivingPrivileges
+      def allowed minor, car
+        if car.paid_off? && minor.insured?
+          [:can_drive_car_to_movies, :can_drive_car_to_work]
+        elsif minor.chaperoned?
+          [:can_drive_car_home]
+        else
+          []
+        end
       end
     end
     ```
-
-3. Add object with your rules to abilities
-
-    ```ruby
-    abilities << BookRules # true
-    ```
-
-4. Thats all. Now you can check abilites. In difference to CanCan it doesnt use current_user method. you manually pass object & subject.
+2. Create a judge to enforce the rules
 
     ```ruby
-    abilities.allowed?(@user, :read_book, @book) # true
+      rules = CarDrivingPrivileges.new
+      judge = Three.judge_enforcing rules
     ```
 
-### Usage with Rails
+3. Now you can use the judge to determine the abilities of the objects in question.
+
+    ```ruby
+    teenager = Person.new(age: 16, insured: false, chaperoned: true)
+    car      = Car.new(paid_off: false)
+    judge.allowed?(teenager, :can_drive_car_home, car) # true
+    ```
+
+### Examples
 
 ```ruby 
-# Controller
 
-# application_controller.rb
-class ApplicationController < ActionController::Base
-  protect_from_forgery
+class PawnRules
 
-  helper_method :abilities, :can?
+  def self.allowed(piece, square)
 
-  protected 
+    # if the rules do not apply, return nothing
+    # yours checks here may start with a
+    # verification of the type passed in
+    return [] unless piece.is_a_pawn?
 
-  def abilities
-    @abilities ||= Six.new
+    return [] if square.is_covered_by_friendly_piece?
+
+    return [] if piece.position_is_protecting_from_check
+
+    rights = []
+
+    rights << :can_move_to if square.is_one_space_before(piece.square)
+    rights << :can_promote if square.is_at_the_end_of_the_board?
+
+    rights
+
   end
 
-  # simple delegate method for controller & view
-  def can?(object, action, subject)
-    abilities.allowed?(object, action, subject)
-  end
 end
 
-# books_controller.rb
-class BooksController < ApplicationController
-  before_filter :add_abilities
-  before_filter :load_author
+# create judge
+judge = Three.judge_for([PawnRules.new, KingRules.new]) # QueenRules, etc...
 
-  def show
-    @book = Book.find(params[:id])
-    head(404) and return unless can?(:guest, :read_book, @book)
-  end
-
-  def edit
-    @book = Book.find(params[:id])
-    head(404) and return unless can?(@author, :edit_book, @book)
-  end
-
-  protected
-
-  def add_abilities
-    abilities << Book
-  end
-
-  def load_author
-    @author = Author.find_by_id(params[:author_id])
-  end
-end
-
-
-# Model
-class Book < ActiveRecord::Base
-  belongs_to :author
-
-  def self.allowed(object, subject)
-    rules = []
-    return rules unless subject.instance_of?(Book)
-    rules << :read_book if subject.public?
-    rules << :edit_book if object && object.id == subject.author_id
-    rules
-  end
-end
-
-# View
-link_to 'Edit', edit_book_path(book) if can?(@author, :edit_book, @book)
-```
-
-### Ruby Usage
-
-```ruby 
-class BookRules
-  # All authorization works on objects with method 'allowed'
-  # No magic behind the scene
-  # You can put this method to any class or object you want
-  # It should always return array
-  # And be aready to get nil in args
-  def self.allowed(author, book)
-    rules = []
-
-    # good practice is to check for object type
-    return rules unless book.instance_of?(Book)
-
-    rules << :read_book if book.published? 
-    rules << :edit_book if book.author?(author)
-
-    # you are free to write any conditions you need
-    if book.author?(author) && book.is_approved? # ....etc...
-      rules << :publish_book 
+possible_moves = []
+chess_board.squares.each do |square|
+  my_pieces.each do |chess_piece|
+    if judge.allowed? chess_piece, :can_move_to, square
+      possible_moves << [chess_pice, square]
     end
-
-    rules # return array of abilities
   end
 end
 
-# create abilites object
-abilites = Six.new
-
-# add rules
-abilities << BookRules # true
-
-# thats all - now we can use it!
-
-abilities.allowed? guest, :read_book, unpublished_book # false
-abilities.allowed? guest, :read_book, published_book # true
-abilities.allowed? guest, :edit_book, book # false
-abilities.allowed? author, :edit_book, book # true
-abilities.allowed? guest, :remove_book, book # false
 ```
-
-
-### :initialization
-
-```ruby
-# simple
-abilities = Six.new
-
-# with rules
-abilities = Six.new(:book_rules => BookRules) # same as Six.new & add(:book_rules, BookRules)
-
-# with more
-abilities = Six.new(:book => BookRules,
-                    :auth => AuthRules,
-                    :managment => ManagerRules)
-```
-
-### Adding rules
-
-```ruby
-
-abilities = Six.new
-
-# 1. simple (recommended)
-# but you cant use  abilities.use(:book_rules) to 
-# search over book namespace only
-abilities << BookRules
-
-# 2. advanced
-# now you can use  abilities.use(:book_rules) to 
-# search over book namespace only
-abilities.add(:book_rules, BookRules)
-
-```
-
-### :allowed?
-
-
-```ruby
-
-abilities = Six.new
-
-abilities << BookRules
-
-abilities.allowed? @guest, :read_book, @book # true
-abilities.allowed? @guest, :edit_book, @book # false
-abilities.allowed? @guest, :rate_book, @book # true
-
-abilities.allowed? @guest, [:read_book, :edit_book], @book # false
-abilities.allowed? @guest, [:read_book, :rate_book], @book # true
-```
-
-
-### :use
-
-```ruby 
-abilities.add(:book_rules, BookRules)
-abilities.add(:car_rules, CarRules)
-
-abilities.allowed? ... # scan for both BookRules & CarRules & require kind_of check
-
-abilities.use(:book_rules)
-abilities.allowed? ... # use rules from BookRules only -> more perfomance
-```
-
-### Namespaces
-
-```ruby 
-class BookRules
-  def self.allowed(author, book)
-    [:read_book, :edit_book, :publish_book] 
-  end
-end
-
-class CarRules
-  def self.allowed(driver, car)
-    [:drive, :sell] 
-  end
-end
-
-# init object
-abilities = Six.new
-
-# add packs with namespace support
-abilities.add(:book, BookRules) # true
-abilities.add(:car, CarRules)   # true
-abilities.add(:ufo, nil)        # false
-abilities.add!(:ufo, nil)       # raise Six::InvalidPackPassed
-
-
-# use specific pack for rules (namespace)
-abilities.use(:book) # true
-abilities.allowed? :anyone, :read_book, book # true
-abilities.allowed? :anyone, :drive, car # false
-
-abilities.use(:car)
-abilities.allowed? :anyone, :drive, :any      # true
-abilities.allowed? :anyone, :read_book, :any  # false
-
-# use reset to return to global usage
-abilities.reset_use
-abilities.allowed? :anyone, :drive, :any     # true
-abilities.allowed? :anyone, :read_book, :any # true
-
-# different use methods
-abilities.use(:ufo)  # false
-abilities.use!(:ufo) # raise Six::NoPackError
-
-
-# remove pack
-abilities.remove(:book)  # true
-abilities.remove(:ufo)   # false
-abilities.remove!(:ufo)  # raise Six::NoPackError
-
-abilities.use(:car)  # true
-abilities.current_rule_pack # :car
-
-```
-
