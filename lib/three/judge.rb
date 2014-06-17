@@ -22,7 +22,7 @@ module Three
     end
 
     def these_permissions_are_allowed_for? permissions, subject, target
-      permissions.all? { |p| permission_included? subject, p, target }
+      permissions.all? { |p| permission_included_between? p, subject, target }
     end
 
     def a_single_array_was_provided? rules
@@ -33,7 +33,7 @@ module Three
       thing.respond_to? :each
     end
 
-    def permission_included? subject, permission_to_check, target
+    def permission_included_between? permission_to_check, subject, target
       allowed_permissions_for(subject, target).include? permission_to_check.to_s
     end
 
