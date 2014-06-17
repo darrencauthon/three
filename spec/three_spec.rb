@@ -151,7 +151,8 @@ describe Three do
         o = Object.new
         o.stubs(:allowed).with(subject, nil).raises 'error'
         o.stubs(:allowed).with(subject).returns [:orange, :banana]
-        o.stubs(:prevented).with(subject, nil).returns [:apple]
+        o.stubs(:prevented).with(subject, nil).raises 'error'
+        o.stubs(:prevented).with(subject).returns [:apple]
         o
       end
 
@@ -159,7 +160,8 @@ describe Three do
         o = Object.new
         o.stubs(:allowed).with(subject, nil).raises 'error'
         o.stubs(:allowed).with(subject).returns [:apple, :pear]
-        o.stubs(:prevented).with(subject, nil).returns [:banana]
+        o.stubs(:prevented).with(subject, nil).raises 'error'
+        o.stubs(:prevented).with(subject).returns [:banana]
         o
       end
 
@@ -208,7 +210,8 @@ describe Three do
         o = Object.new
         o.stubs(:allowed).with(subject, nil).raises 'error'
         o.stubs(:allowed).with(subject).returns [:orange, :banana]
-        o.stubs(:prevented).with(subject, nil).returns [:apple]
+        o.stubs(:prevented).with(subject, nil).raises 'error'
+        o.stubs(:prevented).with(subject).returns [:apple]
         o
       end
 
@@ -216,7 +219,8 @@ describe Three do
         o = Object.new
         o.stubs(:allowed).with(subject, nil).raises 'error'
         o.stubs(:allowed).with(subject).returns [:apple, :pear]
-        o.stubs(:prevented).with(subject, nil).returns [:banana]
+        o.stubs(:prevented).with(subject, nil).raises 'error'
+        o.stubs(:prevented).with(subject).returns [:banana]
         o
       end
 

@@ -55,7 +55,11 @@ module Three
     def permissions_to_reject_for subject, target
       permissions = rules.map do |r| 
                                 begin
-                                  r.prevented(subject, target)
+                                  begin
+                                    r.prevented(subject, target)
+                                  rescue
+                                    r.prevented(subject)
+                                  end
                                 rescue
                                   []
                                 end
