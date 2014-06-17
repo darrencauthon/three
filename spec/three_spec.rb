@@ -222,12 +222,12 @@ describe Three do
 
       it "should return false for the permissions that are prevented" do
         abilities.allowed?(subject, :banana).must_equal false
-        #abilities.allowed?(subject, :apple).must_equal false
+        abilities.allowed?(subject, :apple).must_equal false
       end
 
       it "should return true for the permissions that are not prevented" do
-        #abilities.allowed?(subject, :pear).must_equal true
-        #abilities.allowed?(subject, :orange).must_equal true
+        abilities.allowed?(subject, :pear).must_equal true
+        abilities.allowed?(subject, :orange).must_equal true
       end
 
     end
