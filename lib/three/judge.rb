@@ -7,7 +7,7 @@ module Three
     end
 
     def allowed? subject, permissions_to_check, target = nil
-      permissions_to_check = [permissions_to_check] unless this_is_an_array? permissions_to_check
+      permissions_to_check = convert_to_an_array_if_its_not permissions_to_check
       permissions_to_check.all? { |p| permission_included? subject, p, target }
     end
 
@@ -15,6 +15,10 @@ module Three
 
     def rules
       @rules
+    end
+
+    def convert_to_an_array_if_its_not potential_array
+      this_is_an_array?(potential_array) ? potential_array : [potential_array]
     end
 
     def a_single_array_was_provided? rules
