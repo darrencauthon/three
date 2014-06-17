@@ -40,7 +40,11 @@ module Three
     def all_permissions_for subject, target
       permissions = rules.map do |rp| 
                                 begin
-                                  rp.allowed subject, target
+                                  begin
+                                    rp.allowed subject, target
+                                  rescue
+                                    rp.allowed subject
+                                  end
                                 rescue
                                   []
                                 end
