@@ -2,7 +2,6 @@
 
 [![Build Status](https://travis-ci.org/darrencauthon/three.png)](https://travis-ci.org/darrencauthon/three)
 [![Code Climate](https://codeclimate.com/github/darrencauthon/three.png)](https://codeclimate.com/github/darrencauthon/three)
-[![Coverage Status](https://coveralls.io/repos/darrencauthon/three/badge.png)](https://coveralls.io/r/darrencauthon/three)
 
 This gem started as a minor fork of [six](https://github.com/randx/six), a neat, tiny authorization gem.  I used six and liked it, but as small was it was I found that I needed maybe half of its code and features. So here is *three*.
 
