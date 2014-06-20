@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.description = "Even simpler authorization gem"
   s.authors     = ["Darren Cauthon"]
   s.email       = 'darren@cauthon.com'
-  s.files       = ["lib/three.rb"]
+  s.files       = `git ls-files`.split($/)
   s.homepage    = 'https://github.com/darrencauthon/three'
 
   s.add_development_dependency 'mocha'
