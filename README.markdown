@@ -1,18 +1,10 @@
-## Three - is a super-ultra simple authorization gem for ruby! 
+## Three - an even smaller, tinier simple authorization gem for ruby
 
 [![Build Status](https://travis-ci.org/darrencauthon/three.png?branch=master)](https://travis-ci.org/darrencauthon/three)
 [![Code Climate](https://codeclimate.com/github/darrencauthon/three.png)](https://codeclimate.com/github/darrencauthon/three)
 [![Coverage Status](https://coveralls.io/repos/darrencauthon/three/badge.png)](https://coveralls.io/r/darrencauthon/three)
 
-This gem started as a minor fork of [six](https://github.com/randx/six), a neat authorization gem that is also very simple to use.  I forked it for the following reasons:
-
-1. I have concerns about how six holds state, allowing rules to be turned on-and-off.
-1. six does not allow rules to be built based on relationships between objects.
-1. six did not respond to my puller request to add the optional checking of relationships between objects.
-1. I thought six could be even more simple.
-1. Fun.
-
-Though this started as a fork of six, three is a full rewrite.
+This gem started as a minor fork of [six](https://github.com/randx/six), a neat, tiny authorization gem.  I like
 
 ### Installation
 
