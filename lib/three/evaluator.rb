@@ -2,7 +2,10 @@ module Three
 
   class Evaluator
 
+    attr_accessor :rescue_errors
+
     def initialize(rules)
+      @rescue_errors = true
       @rules = a_single_array_was_provided?(rules) ? rules[0] : rules
     end
 
@@ -55,10 +58,14 @@ module Three
     end
 
     def execute_rule rule, method, subject, target
-      begin
+      if rescue_errors
+        begin
+          rule.send(method, subject, target)
+        rescue
+          []
+        end
+      else
         rule.send(method, subject, target)
-      rescue
-        []
       end
     end
 
