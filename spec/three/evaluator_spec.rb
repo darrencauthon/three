@@ -21,6 +21,26 @@ describe Three::Evaluator do
 
     end
 
+    describe "prevented" do
+
+      it "should return not block the permission if it returns an error" do
+
+        good_rule, bad_rule = Object.new, Object.new
+
+        good_rule.stubs(:allowed).returns [:apple]
+        good_rule.stubs(:prevented).returns [:apple]
+
+        bad_rule.stubs(:allowed).returns [:apple]
+        bad_rule.stubs(:prevented).raises 'k'
+
+        Three.evaluator_for(good_rule).allowed?(nil, :apple).must_equal false
+        Three.evaluator_for(bad_rule).allowed?(nil, :apple).must_equal true
+          
+      end
+
+    end
+
+
   end
 
 end
