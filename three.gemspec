@@ -10,4 +10,5 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.com/darrencauthon/three'
 
   s.add_development_dependency 'mocha'
+  s.add_development_dependency 'rake'
 end
