@@ -6,7 +6,7 @@ describe Three do
 
     describe "there are no rules" do
 
-      let(:abilities) { Three::Judge.new([]) }
+      let(:abilities) { Three::Evaluator.new([]) }
 
       it "should return false" do
         abilities.allowed?(nil, :does_not_matter).must_equal false
@@ -19,7 +19,7 @@ describe Three do
 
       describe "one rule that returns one permission" do
 
-        let(:abilities) { Three.judge_enforcing([rule]) }
+        let(:abilities) { Three.evaluator_for([rule]) }
 
         let(:subject) { Object.new }
 
@@ -67,7 +67,7 @@ describe Three do
 
     describe "one rule that returns two permissions" do
 
-      let(:abilities) { Three.judge_enforcing([rule]) }
+      let(:abilities) { Three.evaluator_for([rule]) }
 
       let(:subject) { Object.new }
 
@@ -100,7 +100,7 @@ describe Three do
 
     describe "two rules that return one permission each" do
 
-      let(:abilities) { Three.judge_enforcing([rule1, rule2]) }
+      let(:abilities) { Three.evaluator_for([rule1, rule2]) }
 
       let(:subject) { Object.new }
 
@@ -139,7 +139,7 @@ describe Three do
 
     describe "rejecting permissions" do
 
-      let(:abilities) { Three.judge_enforcing([rule1, rule2]) }
+      let(:abilities) { Three.evaluator_for([rule1, rule2]) }
 
       let(:subject) { Object.new }
 
@@ -194,7 +194,7 @@ describe Three do
 
     describe "alternate constructor" do
 
-      let(:abilities) { Three.judge_enforcing(rule1, rule2) }
+      let(:abilities) { Three.evaluator_for(rule1, rule2) }
 
       let(:subject) { Object.new }
 
@@ -226,7 +226,7 @@ describe Three do
 
     describe "no rules provided" do
       it "should return false for everything" do
-        abilities = Three::Judge.new([])
+        abilities = Three::Evaluator.new([])
         abilities.allowed?(Object.new, :anything).must_equal false
         abilities.allowed?(Object.new, :anything, Object.new).must_equal false
       end

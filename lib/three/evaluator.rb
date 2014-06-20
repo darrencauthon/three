@@ -1,6 +1,6 @@
 module Three
 
-  class Judge
+  class Evaluator
 
     def initialize(rules)
       @rules = a_single_array_was_provided?(rules) ? rules[0] : rules
