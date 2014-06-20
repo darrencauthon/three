@@ -151,3 +151,20 @@ The "prevented" method works just like "allowed," except that it will remove the
 
 The "prevented" method is the only only feature added with six. 
 
+### Errors
+
+By default, errors in a rule or calling a rule is turned off.  This means that you don't have to declare "allowed" or "prevented" on your rules, and you can have clean examples like the one above.
+
+However, sometimes you may not want to run your production code through blanket rescue statements.  So, you can disable this using:
+
+```ruby
+
+module RulesMissingMethods
+end
+
+evaluator = Three.evaluator_for RulesMissingMethods
+evaluator.rescue_errors = false
+
+evaluator.allowed? nil, :watch_out # POW an error was raised
+
+```
