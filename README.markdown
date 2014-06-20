@@ -1,6 +1,6 @@
 ## Three - an even smaller, tinier simple authorization gem for ruby
 
-[![Build Status](https://travis-ci.org/darrencauthon/three.png?branch=master)](https://travis-ci.org/darrencauthon/three)
+[![Build Status](https://travis-ci.org/darrencauthon/three.png)](https://travis-ci.org/darrencauthon/three)
 [![Code Climate](https://codeclimate.com/github/darrencauthon/three.png)](https://codeclimate.com/github/darrencauthon/three)
 [![Coverage Status](https://coveralls.io/repos/darrencauthon/three/badge.png)](https://coveralls.io/r/darrencauthon/three)
 
