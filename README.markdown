@@ -4,7 +4,13 @@
 [![Code Climate](https://codeclimate.com/github/darrencauthon/three.png)](https://codeclimate.com/github/darrencauthon/three)
 [![Coverage Status](https://coveralls.io/repos/darrencauthon/three/badge.png)](https://coveralls.io/r/darrencauthon/three)
 
-This gem started as a minor fork of [six](https://github.com/randx/six), a neat, tiny authorization gem.  I like
+This gem started as a minor fork of [six](https://github.com/randx/six), a neat, tiny authorization gem.  I used six and liked it, but as small was it was I found that I needed maybe half of its code and features. So here is *three*.
+
+**three** is a small authentication library, focused on only a few needs:
+
+1. Provide an open/closed method of constructing rules,
+2. Provide a way to remove permissions, and
+3. Do it as simply as possible.
 
 ### Installation
 
@@ -12,61 +18,137 @@ This gem started as a minor fork of [six](https://github.com/randx/six), a neat,
   gem install three
 ```
 
+### Usage
 
-### QuickStart
-
-3 steps:
-
-**Step 1:** Create an object with an "allowed" method. 
-
-This method will receive one argument, the subject for which the rules are checked.  It will return an array of symbols, each of which will stand for a permission.
-
-Here is an example of a method to see what permissions an admin will have.  The method will check the admin's roles and return the proper permissions as an array.
+Here's the simplest working example... a set of rules that apply for all
 
 ```ruby
-class AdminRules
-      
-  def allowed admin
-    rules = []
-    rules << :can_edit_users if admin.is_a_super_admin?
-    rules << :can_edit_documents if admin.is_a_librarian?
-    rules
+# make an object with an "allowed" method that returns an array of permissions
+module Rules
+  def self.allowed _, _
+    [:edit, :delete]
   end
-      
 end
+
+# create an evaluator that can be used to evaluate rules
+evaluator = Three.evaluator_for Rules
+
+# use the evaluator to determine what's allowed or not
+
+evaluator.allowed? nil, :edit   # true
+evaluator.allowed? nil, :close  # false
+evaluator.allowed? nil, :delete # true
 ```
-    
-Optionally, this method can accept two arguments.  The first argument is the subject, and the second argument is a target.  This method can be useful for determining permissions the subject has with regards to a relationship with another object.
+
+Unfortunately, that's not a very realistic example. We'll almost always want to evaluate the rules based on some sort of subject:
 
 ```ruby
-class ViewingRights
-      
-  def allowed viewer, movie
-    return [] if movie.rated_r? and viewer.minor?
-    [:can_watch]
+module AdminRules
+  def self.allowed user, _
+    return [] unless user.admin?
+    [:edit, :delete]
   end
-      
 end
+
+evaluator = Three.evaluator_for AdminRules
+
+admin_user   = User.new(admin: true)
+not_an_admin = User.new(admin: false)
+
+evaluator.allowed? admin_user, :edit        # true
+evaluator.allowed? not_an_admin_user, :edit # false
 ```
-    
-**Step 2:** Create a judge to enforce the rules
+
+See?  The array of permissions returned by the "allowed" method are used to determine if a user can do something.
+
+The rules can be compounded, like so:
+
 
 ```ruby
-  rules = [AdminRules.new, ViewingRights.new]
-  
-  judge = Three.judge_enforcing rules
+module AdminRules
+  def self.allowed user, _
+    return [] unless user.admin?
+    [:edit, :delete]
+  end
+end
+
+module UserRules
+  def self.allowed user, _
+    return [] if user.admin?
+    [:view_my_account]
+  end
+end
+
+evaluator = Three.evaluator_for(AdminRules, UserRules)
+
+admin_user   = User.new(admin: true)
+not_an_admin = User.new(admin: false)
+
+evaluator.allowed? admin_user, :edit        # true
+evaluator.allowed? not_an_admin_user, :edit # false
+
+evaluator.allowed? admin_user, :view_my_account        # false
+evaluator.allowed? not_an_admin_user, :view_my_account # true
 ```
 
-**Step 3:** Now you can use the judge to determine the abilities of the objects in question.
+But what about that trailing "_" variable?  That's used as an optional target, which you can use to return permissions based on the relationship between the two arguments:
 
 ```ruby
+module MovieRules
+  def self.allowed user, movie
+    if user.is_a_minor? and movie.is_rated_r
+      []
+    else
+      [:can_buy_the_ticket]
+    end
+  end
+end
 
-judge.allowed?(super_admin, :can_edit_users) # true
+evaluator = Three.evaluator_for MovieRules
 
-judge.allowed?(librarian, :can_edit_users)     # false
-judge.allowed?(librarian, :can_edit_documents) # true
+minor       = User.new(minor: true)
+not_a_minor = User.new(minor: false)
 
-judge.allowed?(toddler, :can_watch, night_of_the_living_dead) # false
-judge.allowed?(toddler, :can_watch, thomas_the_train)         # true
- 
+scary_movie = Movie.new(rating: 'R')
+kids_movie  = Movie.new(rating: 'PG')
+
+evaluator.allowed? minor, :can_buy_the_ticket, scary_movie        # false
+evaluator.allowed? not_a_minor, :can_buy_the_ticket, scary_movie  # true
+
+evaluator.allowed? minor, :can_buy_the_ticket, kids_movie        # true
+evaluator.allowed? not_a_minor, :can_buy_the_ticket, kids_movie  # true
 ```
+
+Only one more special thing... what if we want to right a rule that prevents something?
+
+```ruby
+module DefaultLibraryRules
+  def self.allowed user, book
+    [:reserve_the_book]
+  end
+end
+
+module FinesOwedRules
+  def self.prevented user, _
+    if user.owes_fines?
+      [:reserve_the_book]
+    else
+      []
+    end
+  end
+end
+
+evaluator = Three.evaluator_for(DefaultLibraryRules, FinesOwedRules)
+
+deadbeat            = User.new(fines: 3.0)
+responsible_citizen = User.new(fines: 0)
+
+evaluator.allowed? deadbeat, :reserve_the_book             # false
+evaluator.allowed? responsible_citizen, :reserve_the_book  # true
+
+```
+
+The "prevented" method works just like "allowed," except that it will remove the permission from any other rule's "allowed" method.
+
+The "prevented" method is the only only feature added with six. 
+
