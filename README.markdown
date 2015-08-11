@@ -168,3 +168,21 @@ evaluator.rescue_errors = false
 evaluator.allowed? nil, :watch_out # POW an error was raised
 
 ```
+
+### Tracing
+
+Ok, so if your security rights are broken out into many different classes, it might be helpful to which one is allowing or preventing permissions.
+
+If you'd like to take a peek behind the curtain, try the following:
+
+```ruby
+Three.when_noting do |what, details|
+  # "what" will be :allowed/:prevented
+  #   details is a hash with the following:
+  #   subject     # the subject of the rules check
+  #   target      # the target, if one was provided
+  #   permissions # the permissions either allowed or prevented
+  #   rule        # the rule making the check
+  puts [what, details].inspect
+end
+```
