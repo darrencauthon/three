@@ -234,20 +234,20 @@ describe Three do
 
   end
 
-  describe "noting" do
+  describe "tracing" do
 
-    before { Three.instance_eval { @note_method = nil } }
-    after  { Three.instance_eval { @note_method = nil } }
+    before { Three.instance_eval { @trace_method = nil } }
+    after  { Three.instance_eval { @trace_method = nil } }
 
     it "should do nothing by default" do
-      Three.note nil, nil
+      Three.trace nil, nil
     end
 
     it "should allow me to register a new way to handle nothing" do
       one, two, thing = Object.new, Object.new, Object.new
-      Three.when_noting { |a, b| [a, b, thing] }
+      Three.when_tracing { |a, b| [a, b, thing] }
 
-      result = Three.note one, two
+      result = Three.trace one, two
       result[0].must_be_same_as one
       result[1].must_be_same_as two
       result[2].must_be_same_as thing

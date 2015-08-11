@@ -176,7 +176,7 @@ Ok, so if your security rights are broken out into many different classes, it mi
 If you'd like to take a peek behind the curtain, try the following:
 
 ```ruby
-Three.when_noting do |what, details|
+Three.when_tracing do |what, details|
   # "what" will be :allowed/:prevented
   #   details is a hash with the following:
   #   subject     # the subject of the rules check

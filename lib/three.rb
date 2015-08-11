@@ -6,12 +6,12 @@ module Three
     Three::Evaluator.new(rules)
   end
 
-  def self.note what, details
-    @note_method.call(what, details) if @note_method
+  def self.trace what, details
+    @trace_method.call(what, details) if @trace_method
   end
 
-  def self.when_noting &block
-    @note_method = block
+  def self.when_tracing &block
+    @trace_method = block
   end
 
 end

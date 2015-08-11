@@ -67,7 +67,7 @@ module Three
                     else
                       rule.send(method, subject, target)
                     end
-      Three.note method, { subject: subject, target: target, permissions: permissions, rule: rule }
+      Three.trace method, { subject: subject, target: target, permissions: permissions, rule: rule }
       permissions
     end
 
