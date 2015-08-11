@@ -1,0 +1,5 @@
+v 1.1.0
+  - Added ability to "prevent" rules. Works just like "allowed", but allows a rule to block out a permission.
+
+v 1.2.0
+  - Added tracing.  This allows the user to provide a method to trace what rules are providing which permissions.
