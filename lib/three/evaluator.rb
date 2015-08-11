@@ -58,15 +58,19 @@ module Three
     end
 
     def execute_rule rule, method, subject, target
-      if rescue_errors
-        begin
-          rule.send(method, subject, target)
-        rescue
-          []
-        end
-      else
-        rule.send(method, subject, target)
+      permissions = if rescue_errors
+                      begin
+                        rule.send(method, subject, target)
+                      rescue
+                        []
+                      end
+                    else
+                      rule.send(method, subject, target)
+                    end
+      if method == :allowed
+        Three.note :allowed, { subject: subject, target: target, permissions: [:something], rule: rule }
       end
+      permissions
     end
 
     def flatten_permissions permissions

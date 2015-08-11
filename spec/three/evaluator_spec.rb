@@ -86,4 +86,25 @@ describe Three::Evaluator do
 
   end
 
+  describe "noting important things" do
+
+    let(:the_subject) { Object.new }
+    let(:the_target)  { Object.new }
+
+    it "should note the allowed permission build-up" do
+      good_rule = Object.new
+      good_rule.stubs(:allowed).returns [:something]
+
+      Three.expects(:note).with do |what, stuff|
+        what.must_equal :allowed
+        stuff[:rule].must_be_same_as good_rule
+        stuff[:permissions].must_equal [:something]
+        stuff[:subject].must_be_same_as the_subject
+        stuff[:target].must_be_same_as the_target
+      end
+      Three.evaluator_for(good_rule).allowed?(the_subject, :something, the_target)
+    end
+
+  end
+
 end

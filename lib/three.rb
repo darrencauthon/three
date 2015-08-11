@@ -6,4 +6,7 @@ module Three
     Three::Evaluator.new(rules)
   end
 
+  def self.note what, details
+  end
+
 end
