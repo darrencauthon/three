@@ -234,4 +234,25 @@ describe Three do
 
   end
 
+  describe "noting" do
+
+    before { Three.instance_eval { @note_method = nil } }
+    after  { Three.instance_eval { @note_method = nil } }
+
+    it "should do nothing by default" do
+      Three.note nil, nil
+    end
+
+    it "should allow me to register a new way to handle nothing" do
+      one, two, thing = Object.new, Object.new, Object.new
+      Three.when_noting { |a, b| [a, b, thing] }
+
+      result = Three.note one, two
+      result[0].must_be_same_as one
+      result[1].must_be_same_as two
+      result[2].must_be_same_as thing
+    end
+
+  end
+
 end
