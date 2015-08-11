@@ -92,19 +92,20 @@ describe Three::Evaluator do
     let(:the_target)  { Object.new }
     let(:permission)  { SecureRandom.uuid.to_sym }
 
-    it "should note the allowed permission build-up" do
-      good_rule = Object.new.tap do |r|
-                    r.stubs(:allowed).returns [permission]
-                  end
+    let(:rule) { Object.new.tap { |r| r.stubs(:allowed).returns [permission] } }
 
+    let(:evaluator) { Three.evaluator_for rule }
+
+    it "should note the allowed permission build-up" do
       Three.expects(:note).with do |what, stuff|
         what.must_equal :allowed
-        stuff[:rule].must_be_same_as good_rule
+        stuff[:rule].must_be_same_as rule
         stuff[:permissions].must_equal [permission]
         stuff[:subject].must_be_same_as the_subject
         stuff[:target].must_be_same_as the_target
       end
-      Three.evaluator_for(good_rule).allowed?(the_subject, permission, the_target)
+
+      evaluator.allowed?(the_subject, permission, the_target)
     end
 
   end
