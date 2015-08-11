@@ -103,11 +103,25 @@ describe Three::Evaluator do
 
     let(:evaluator) { Three.evaluator_for rule }
 
+    before { Three.stubs :note }
+
     it "should note the allowed permission build-up" do
       Three.expects(:note).with do |what, stuff|
         what == :allowed &&
           stuff[:rule].object_id == rule.object_id &&
           stuff[:permissions].count == 1 && stuff[:permissions][0] == permission &&
+          stuff[:subject].object_id == the_subject.object_id &&
+          stuff[:target].object_id == the_target.object_id
+      end
+
+      evaluator.allowed?(the_subject, permission, the_target)
+    end
+
+    it "should note the prevented permission build-up" do
+      Three.expects(:note).with do |what, stuff|
+        what == :prevented &&
+          stuff[:rule].object_id == rule.object_id &&
+          stuff[:permissions].count == 1 && stuff[:permissions][0] == permission_to_prevent &&
           stuff[:subject].object_id == the_subject.object_id &&
           stuff[:target].object_id == the_target.object_id
       end

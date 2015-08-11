@@ -67,9 +67,7 @@ module Three
                     else
                       rule.send(method, subject, target)
                     end
-      if method == :allowed
-        Three.note :allowed, { subject: subject, target: target, permissions: permissions, rule: rule }
-      end
+      Three.note method, { subject: subject, target: target, permissions: permissions, rule: rule }
       permissions
     end
 
